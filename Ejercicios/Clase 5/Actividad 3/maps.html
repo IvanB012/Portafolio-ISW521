@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Galería de Recursos Multimedia</title>
+</head>
+<body>
+
+    <h1>Galería de Recursos - Curso en Línea</h1>
+    <hr>
+
+    <section>
+        <h2>Imagen Destacada del Curso</h2>
+        <picture>
+            <source media="(min-width: 800px)" srcset="imagen-grande.jpg">
+            <img src="imagen-movil.jpg" alt="Estudiantes universitarios colaborando en un proyecto de ingeniería de software" title="Banner principal del curso">
+        </picture>
+    </section>
+
+    <hr>
+
+    <section>
+        <h2>Video de la Clase: Introducción</h2>
+        <video controls poster="miniatura-video.jpg" width="640" title="Clase magistral sobre patrones de diseño">
+            <source src="clase-introduccion.mp4" type="video/mp4">
+            <source src="clase-introduccion.webm" type="video/webm">
+            Tu navegador no soporta la reproducción de este video.
+        </video>
+    </section>
+
+    <hr>
+
+    <section>
+        <h2>Podcast Informativo</h2>
+        <audio controls title="Episodio 1: Consejos para el desarrollo frontend profesional">
+            <source src="podcast-consejos.mp3" type="audio/mpeg">
+            Tu navegador no soporta la reproducción de este audio.
+        </audio>
+    </section>
+
+    <hr>
+
+    <section>
+        <h2>Ubicación de los Laboratorios</h2>
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.447551000676!2d-84.428751!3d10.345864!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDIwJzQ1LjEiTiA4NMKwMjUnNDMuNSJX!5e0!3m2!1ses!2scr!4v1620000000000!5m2!1ses!2scr" 
+            width="600" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy"
+            sandbox="allow-scripts allow-same-origin"
+            title="Mapa interactivo de la ubicación del campus universitario en Google Maps">
+        </iframe>
+    </section>
+
+</body>
+</html>
+
+
+

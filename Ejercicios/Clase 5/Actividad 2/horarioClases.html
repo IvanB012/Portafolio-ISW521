@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Horario de Clases ISW</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 12px;
+        }
+        th {
+            background-color: #a0c4ff;
+            color: #333;
+        }
+        .receso {
+            background-color: #adb5bd;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>7:00</strong></td>
+                <td>ISW-521</td>
+                <td>ISW-311</td>
+                <td>Libre</td>
+            </tr>
+            <tr>
+                <td><strong>9:00</strong></td>
+                <td colspan="3" class="receso">Receso</td>
+            </tr>
+            <tr>
+                <td><strong>10:00</strong></td>
+                <td>ISW-421</td>
+                <td>ISW-521</td>
+                <td>ISW-311</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
