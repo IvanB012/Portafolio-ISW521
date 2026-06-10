@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Laboratorio Flexbox</title>
+  
+  <style>
+    .pricing-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 40px;
+      background-color: #f4f6f9;
+    }
+
+    .pricing-card {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      max-width: 320px;
+      padding: 20px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .pricing-card button {
+      margin-top: auto; 
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pricing-container">
+    <div class="pricing-card">
+      <h3>Básico</h3>
+      <p class="price">$9.99</p>
+      <p class="description">Acceso limitado a las funciones principales.</p>
+      <button>Elegir Plan</button>
+    </div>
+    
+    <div class="pricing-card">
+      <h3>Pro</h3>
+      <p class="price">$19.99</p>
+      <p class="description">Acceso completo a todas las herramientas.</p>
+      <button>Elegir Plan</button>
+    </div>
+
+    <div class="pricing-card">
+      <h3>Premium</h3>
+      <p class="price">$29.99</p>
+      <p class="description">Para empresas que necesitan análisis avanzados.</p>
+      <button>Elegir Plan</button>
+    </div>
+  </div>
+
+</body>
+</html>

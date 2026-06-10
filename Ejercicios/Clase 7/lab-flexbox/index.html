@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Monitoreo Hídrico - AcueductosIoT</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-logo">
+      <span>💧 AcueductosIoT</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Inicio</a></li>
+      <li><a href="#">Sensores</a></li>
+      <li><a href="#">Alertas</a></li>
+      <li><a href="#">Reportes</a></li>
+    </ul>
+    <button class="btn-logout">Cerrar Sesión</button>
+  </nav>
+
+ <div class="dashboard-layout">
+   
+    <aside class="sidebar">
+      <nav class="sidebar-menu">
+        <ul>
+          <li class="active">📊 Resumen</li>
+          <li>💧 Tanques</li>
+          <li>⚡ Presiones</li>
+          <li>🧪 Calidad</li>
+          <li>⚙️ Configuración</li>
+        </ul>
+      </nav>
+    </aside>
+   
+    <main class="main-content">
+      <h2>Gráficos de Monitoreo en Tiempo Real</h2>
+      <p class="subtitle">[ Conectado con Sensores IoT de Guanacaste ]</p>
+      
+      <section class="sensor-grid">
+        <div class="sensor-card">
+          <h3>💧 Nivel de Tanque Principal</h3>
+          <p class="sensor-value">73%</p>
+          <p class="sensor-label">Sector A — Actualizado hace 2 min</p>
+        </div>
+        <div class="sensor-card">
+          <h3>⚡ Presión de Red</h3>
+          <p class="sensor-value">28 PSI</p>
+          <p class="sensor-label">Calle 2 — Min: 30 PSI</p>
+        </div>
+        <div class="sensor-card">
+          <h3>🧪 Calidad del Agua</h3>
+          <p class="sensor-value">0.4 mg/L</p>
+          <p class="sensor-label">Cloro residual — Rango: 0.3-0.5</p>
+        </div>
+        <div class="sensor-card">
+          <h3>🌊 Caudal de Entrada</h3>
+          <p class="sensor-value">142 L/min</p>
+          <p class="sensor-label">Naciente Sur — Normal</p>
+        </div>
+        <div class="sensor-card">
+          <h3>🌡️ Temperatura del Agua</h3>
+          <p class="sensor-value">18.2 °C</p>
+          <p class="sensor-label">Estado: Normal</p>
+        </div>
+        <div class="sensor-card">
+          <h3>⚙️ Válvula de Emergencia</h3>
+          <p class="sensor-value closed">CERRADA</p>
+          <p class="sensor-label">Estado normal — 1 min</p>
+        </div>
+      </section>
+      
+    </main>
+   
+    <aside class="alert-panel">
+      <h3>🔔 Alertas Activas</h3>
+      <div class="alert alert-danger">⚠️ Presión baja — Sector B</div>
+      <div class="alert alert-success">✅ Cloro en rango normal</div>
+    </aside>
+   
+  </div>
+
+</body>
+</html>

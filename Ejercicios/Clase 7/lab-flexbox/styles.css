@@ -1,0 +1,278 @@
+/* ==========================================
+   ESTILOS GENERALES Y BASE
+   ========================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0b132b; /* Modo oscuro elegante */
+  color: #ffffff;
+}
+
+/* ==========================================
+   EJERCICIO 1: NAVBAR
+   ========================================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+  background-color: #1c2541;
+  padding: 0 24px;
+  border-bottom: 2px solid #3a506b;
+}
+
+.nav-links {
+  display: flex;       /* Convierte los <li> también en flex items horizontales */
+  list-style: none;
+  gap: 24px;           /* Crea una separación limpia de 24px entre enlaces */
+}
+
+.nav-links a {
+  color: #5bc0be;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #ffffff;
+}
+
+.btn-logout {
+  background-color: #ff3b30;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Respuesta Ejercicio 1: 
+justify-content con space-between básicamente agarra el espacio vacío que queda en la fila y lo reparte entre los tres elementos 
+de la barra. Entonces, el logo se queda pegado a la izquierda, el botón de salir se va hasta la derecha y los enlaces del centro 
+quedan justo en medio. Es como si CSS acomodara todo automáticamente para que cada cosa quede en su lugar sin que él 
+tenga que moverlas una por una. Es una forma súper eficiente de organizar el espacio en la barra de navegación 
+sin tener que usar márgenes o posiciones absolutas. */ 
+
+/* ==========================================
+   EJERCICIO 2: CUADRÍCULA DE SENSORES
+   ========================================== */
+.sensor-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px;
+}
+
+.sensor-card {
+  flex-basis: calc(33.333% - 16px); /* Tamaño base para lograr 3 columnas fijas */
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.sensor-card:hover {
+  transform: translateY(-4px);
+  border-color: #5bc0be;
+}
+
+.sensor-card h3 {
+  font-size: 1rem;
+  color: #a5a5a5;
+  margin-bottom: 12px;
+}
+
+.sensor-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #5bc0be;
+  margin-bottom: 8px;
+}
+
+.sensor-value.closed {
+  color: #ff3b30; /* Alerta visual para estado cerrado */
+}
+
+.sensor-label {
+  font-size: 0.85rem;
+  color: #8d99ae;
+}
+
+/* Respuesta Ejercicio 2: 
+align-items sirve para acomodar cómo se alinean los elementos dentro de cada fila, como si todos los ítems de esa misma línea 
+tuvieran que quedar parejos entre sí. En cambio, align-content se usa cuando hay varias filas y lo que hace es mover o distribuir 
+el espacio entre las filas completas, no dentro de cada una. Entonces, uno controla el acomodo dentro de la fila y el otro controla 
+el acomodo entre filas cuando hay varias. */
+
+
+
+/* ==========================================
+   EJERCICIO 3: LAYOUT PRINCIPAL DE 3 COLUMNAS
+   ========================================== */
+.dashboard-layout {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 60px); /* Ocupa todo el alto de la pantalla restando los 60px del navbar */
+}
+
+.sidebar {
+  flex: 1;                       /* Toma 1 porción del espacio sobrante */
+  min-width: 180px;              /* Piso mínimo requerido por los requerimientos */
+  background-color: #0d1b2a;
+  padding: 24px;
+  border-right: 2px solid #3a506b;
+}
+
+.main-content {
+  flex: 3;                       /* Toma 3 porciones del espacio libre (área dominante) */
+  background-color: #0b132b;
+  padding: 24px;
+}
+
+.alert-panel {
+  flex: 1;                       /* Toma 1 porción del espacio sobrante */
+  background-color: #0d1b2a;
+  padding: 24px;
+  border-left: 2px solid #3a506b;
+}
+
+/* Ajuste fino de tipografías y elementos internos */
+.main-content h2 {
+  margin-bottom: 4px;
+  color: #ffffff;
+}
+
+.main-content .subtitle {
+  color: #8d99ae;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.sidebar-menu ul {
+  list-style: none;
+}
+
+.sidebar-menu li {
+  padding: 12px 16px;
+  color: #8d99ae;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.sidebar-menu li.active, .sidebar-menu li:hover {
+  background-color: #1c2541;
+  color: #5bc0be;
+}
+
+.alert {
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.alert-danger {
+  background-color: rgba(255, 59, 48, 0.15);
+  border: 1px solid #ff3b30;
+  color: #ff3b30;
+}
+
+.alert-success {
+  background-color: rgba(91, 192, 190, 0.15);
+  border: 1px solid #5bc0be;
+  color: #5bc0be;
+}
+
+/* REAJUSTE DE LAS TARJETAS (EJERCICIO 2) PARA EL ENTORNO FLUIDO DEL MAINCANTENT */
+.sensor-card {
+  flex-basis: calc(33.333% - 11px) !important; /* Recalculo para encajar con el nuevo contenedor */
+}
+
+/* Respuesta Ejercicio 3:
+  1.¿Diferencia entre flex: 1 y flex-grow: 1? 
+  flex-grow solo hace que el elemento crezca cuando sobra espacio, pero mantiene 
+  su tamaño base normal. En cambio, flex con valor 1 cambia más cosas a la vez, porque también pone el tamaño inicial en 0, entonces 
+  todos los elementos empiezan desde cero y el espacio se reparte de forma totalmente pareja entre ellos.
+  
+  2.¿Cómo evitar que el Sidebar sea menor a 180px?  
+  Aquí lo mejor es usar min-width. Esa propiedad funciona como un límite mínimo que el flexbox no puede romper, así que aunque el 
+  contenedor se haga pequeño, el Sidebar nunca va a bajar de 180px.
+
+  3.¿Qué pasa al cambiar el Main Content de flex: 3 a flex: 5?  
+  Cuando aumenta ese número, lo que hace es darle más porciones del espacio total. Si antes tenía 3 y ahora tiene 5, 
+  el Main Content se vuelve mucho más grande que los otros, ocupando la mayor parte del ancho, mientras que el Sidebar y 
+  el Alert Panel quedan más pequeños porque solo tienen 1 porción cada uno.
+*/
+
+
+/* ==========================================
+   EJERCICIO 4: RETO RESPONSIVE (MEDIA QUERY)
+   ========================================== */
+@media (max-width: 768px) {
+
+  body {
+    min-height: 100vh;     /* Garantiza que la estructura llene toda la pantalla móvil */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-layout {
+    flex-direction: column; /* ¡El cambio maestro! Las columnas ahora se apilan en filas */
+    min-height: auto;
+  }
+
+  .sidebar,
+  .alert-panel {
+    flex: none;             /* Cancelamos la distribución proporcional de escritorio */
+    width: 100%;            /* Forzamos a que abarquen todo el ancho del teléfono */
+    min-height: auto;
+    border-right: none;
+    border-left: none;
+  }
+
+  .sidebar {
+    border-bottom: 2px solid #3a506b; /* Añadimos separación visual inferior en móvil */
+  }
+
+  .alert-panel {
+    border-top: 2px solid #3a506b;    /* Añadimos separación visual superior en móvil */
+  }
+
+  .main-content {
+    flex: 1;                /* Se expande de forma elástica para consumir el espacio central */
+  }
+
+  /* Ajuste responsivo extra para las tarjetas de los sensores */
+  .sensor-card {
+    flex-basis: 100% !important; /* En móviles, cada tarjeta ocupa su propia fila completa */
+  }
+
+  .navbar {
+    flex-direction: column;   /* Apila el logo, los links y el botón verticalmente */
+    height: auto;             /* Permite que la barra crezca hacia abajo según su contenido */
+    padding: 16px;            /* Agrega espacio interno uniforme */
+    gap: 12px;                /* Separa verticalmente los tres bloques */
+  }
+
+  .nav-links {
+    gap: 12px;                /* Reduce el espacio entre enlaces para que quepan bien */
+    padding: 0;
+  }
+
+/* Respuesta Ejercicio 4:
+   Cuando uso min-height en vez de height con 100vh, lo hago porque height fija la altura exacta de la pantalla y 
+   eso en celular rompe todo cuando el contenido es más largo, ya que no deja que la página crezca y se termina desbordando. 
+   En cambio, min-height: 100vh le dice al contenedor que mida al menos lo que mide la pantalla, pero que pueda crecer todo 
+   lo que necesite hacia abajo si hay mucho contenido. Así no quedan huecos y el scroll funciona normal. */ 
+
+}
