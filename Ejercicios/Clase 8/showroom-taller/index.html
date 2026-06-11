@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>Toyota Showroom — ISW-521 Lab #3</title>
+  <meta name="description"
+        content="Showroom interactivo Toyota. Explorá el Corolla GR Sport y la Hilux 4×4 desde todos los ángulos y en distintos colores. Sin JavaScript." />
+  <meta name="keywords"
+        content="Toyota, Corolla GR, Hilux 4x4, showroom, auto, CSS, radio button hack" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Toyota Showroom — ISW-521" />
+  <meta property="og:description" content="Showroom CSS puro. Cero JavaScript." />
+  <meta property="og:type"        content="website" />
+
+  <!-- Google Fonts: Inter + Barlow Condensed -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- CSS — Orden de cascada deliberado -->
+  <link rel="stylesheet" href="css/variables.css" />   <!-- 1. Tokens     -->
+  <link rel="stylesheet" href="css/layout.css" />      <!-- 2. Grid       -->
+  <link rel="stylesheet" href="css/palette.css" />     <!-- 3. Paleta     -->
+  <link rel="stylesheet" href="css/interactions.css"/> <!-- 4. Radio Hack -->
+</head>
+
+<body>
+
+  <!--
+    ╔══════════════════════════════════════════════════════════╗
+    ║  INPUTS DE RADIO GLOBALES — AL INICIO DEL FLUJO HTML    ║
+    ║                                                          ║
+    ║  RESTRICCIÓN CRÍTICA: deben ser hermanos anteriores       ║
+    ║  de TODOS los elementos que controlan para que el         ║
+    ║  selector general hermano (~) funcione correctamente.     ║
+    ║                                                          ║
+    ║  Todos llevan .visually-hidden + aria-label:             ║
+    ║  - Ocultos visualmente (no con display:none / visibility)║
+    ║  - Accesibles para lectores de pantalla                  ║
+    ║  - Focusables por teclado (Tab activa :focus-visible     ║
+    ║    en el <label> asociado via for="")                    ║
+    ╚══════════════════════════════════════════════════════════╝
+  -->
+
+  <!-- ── Grupo 1: Selección de MODELO ──────────────────── -->
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-corolla"
+    name="modelo"
+    value="corolla-gr"
+    checked
+    aria-label="Seleccionar modelo Corolla GR Sport"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-hilux"
+    name="modelo"
+    value="hilux-4x4"
+    aria-label="Seleccionar modelo Hilux 4x4"
+  />
+
+  <!-- ── Grupo 2: Selección de ÁNGULO ──────────────────── -->
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-front"
+    name="angulo"
+    value="front"
+    checked
+    aria-label="Ver vista frontal del vehículo"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-side"
+    name="angulo"
+    value="side"
+    aria-label="Ver vista lateral del vehículo"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-rear"
+    name="angulo"
+    value="rear"
+    aria-label="Ver vista trasera del vehículo"
+  />
+
+  <!-- ── Grupo 3: Selección de COLOR ───────────────────── -->
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-rojo"
+    name="color"
+    value="rojo"
+    checked
+    aria-label="Seleccionar color Rojo Fury"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-negro"
+    name="color"
+    value="negro"
+    aria-label="Seleccionar color Negro Midnight"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-blanco"
+    name="color"
+    value="blanco"
+    aria-label="Seleccionar color Blanco Perlado"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-plata"
+    name="color"
+    value="plata"
+    aria-label="Seleccionar color Plata Metálico"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-azul"
+    name="color"
+    value="azul"
+    aria-label="Seleccionar color Azul Zafiro"
+  />
+  <input
+    class="visually-hidden"
+    type="radio"
+    id="rb-gris"
+    name="color"
+    value="gris"
+    aria-label="Seleccionar color Gris Cemento"
+  />
+
+  <!--
+    ╔══════════════════════════════════════════════════════════╗
+    ║  APLICACIÓN PRINCIPAL                                    ║
+    ║  Hermana posterior de todos los inputs → accesible       ║
+    ║  via selector ~ desde interactions.css                   ║
+    ╚══════════════════════════════════════════════════════════╝
+  -->
+  <div class="showroom" role="main" aria-label="Showroom de vehículos Toyota">
+
+    <!-- ════════════════════════════════════════════════════
+         HEADER
+    ════════════════════════════════════════════════════ -->
+    <header class="showroom__header" role="banner">
+      <div>
+        <p class="showroom__logo" aria-label="Toyota Showroom">
+          <span>Toyota</span> Showroom
+        </p>
+        <p class="showroom__tagline" aria-hidden="true">
+          Configurá tu próximo vehículo
+        </p>
+      </div>
+
+      <!-- Controles de ángulo en el header (duplicado UX) -->
+      <nav aria-label="Selección de ángulo de vista" class="angle-controls">
+        <label
+          class="angle-tab"
+          for="rb-front"
+          id="tab-front"
+          aria-label="Vista frontal"
+          tabindex="0"
+        >
+          <span class="angle-tab__icon" aria-hidden="true">⬛</span>
+          Frontal
+        </label>
+        <label
+          class="angle-tab"
+          for="rb-side"
+          id="tab-side"
+          aria-label="Vista lateral"
+          tabindex="0"
+        >
+          <span class="angle-tab__icon" aria-hidden="true">⬛</span>
+          Lateral
+        </label>
+        <label
+          class="angle-tab"
+          for="rb-rear"
+          id="tab-rear"
+          aria-label="Vista trasera"
+          tabindex="0"
+        >
+          <span class="angle-tab__icon" aria-hidden="true">⬛</span>
+          Trasera
+        </label>
+      </nav>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════
+         STAGE — Escenario del vehículo
+         Grid Overlay: todas las imágenes en grid-area: 1/1
+    ════════════════════════════════════════════════════ -->
+    <section
+      class="showroom__stage"
+      aria-label="Visualización del vehículo seleccionado"
+    >
+      <!--
+        car-viewer usa CSS Grid con grid-template-areas
+        para apilar todas las imágenes en la misma celda.
+        opacity: 0 las oculta; interactions.css revela
+        la correcta según los radios activos.
+      -->
+      <div class="car-viewer" role="img" aria-label="Vista del vehículo">
+
+        <!-- Corolla GR — 3 ángulos -->
+        <img
+          class="car-viewer__img"
+          data-model="corolla-gr"
+          data-angle="front"
+          src="assets/img/corolla-gr-front.png"
+          alt="Toyota Corolla GR Sport — Vista frontal"
+          loading="eager"
+          width="640"
+          height="360"
+        />
+        <img
+          class="car-viewer__img"
+          data-model="corolla-gr"
+          data-angle="side"
+          src="assets/img/corolla-gr-side.png"
+          alt="Toyota Corolla GR Sport — Vista lateral"
+          loading="lazy"
+          width="640"
+          height="360"
+        />
+        <img
+          class="car-viewer__img"
+          data-model="corolla-gr"
+          data-angle="rear"
+          src="assets/img/corolla-gr-rear.png"
+          alt="Toyota Corolla GR Sport — Vista trasera"
+          loading="lazy"
+          width="640"
+          height="360"
+        />
+
+        <!-- Hilux 4x4 — 3 ángulos -->
+        <img
+          class="car-viewer__img"
+          data-model="hilux-4x4"
+          data-angle="front"
+          src="assets/img/hilux-4x4-front.png"
+          alt="Toyota Hilux 4×4 SR5 — Vista frontal"
+          loading="lazy"
+          width="640"
+          height="360"
+        />
+        <img
+          class="car-viewer__img"
+          data-model="hilux-4x4"
+          data-angle="side"
+          src="assets/img/hilux-4x4-side.png"
+          alt="Toyota Hilux 4×4 SR5 — Vista lateral"
+          loading="lazy"
+          width="640"
+          height="360"
+        />
+        <img
+          class="car-viewer__img"
+          data-model="hilux-4x4"
+          data-angle="rear"
+          src="assets/img/hilux-4x4-rear.png"
+          alt="Toyota Hilux 4×4 SR5 — Vista trasera"
+          loading="lazy"
+          width="640"
+          height="360"
+        />
+
+        <!--
+          Capa de colorización: mix-blend-mode:color aplica
+          el --car-color seleccionado sobre la luminosidad del auto.
+          El fondo negro (L=0) no cambia; la carrocería sí.
+        -->
+        <div class="car-color-overlay" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════
+         SIDEBAR — Selección de modelo + info
+    ════════════════════════════════════════════════════ -->
+    <aside class="showroom__sidebar" aria-label="Configuración del vehículo">
+
+      <!-- Selección de modelo -->
+      <section aria-labelledby="sidebar-modelos-title">
+        <p
+          class="sidebar__section-title"
+          id="sidebar-modelos-title"
+        >
+          Modelo
+        </p>
+
+        <div class="sidebar__control-group" role="group" aria-label="Selección de modelo">
+
+          <!--
+            .model-btn con for="rb-corolla" es el label accesible.
+            :focus-visible aplica al recibir foco de teclado.
+          -->
+          <label
+            class="model-btn"
+            for="rb-corolla"
+            id="btn-corolla"
+            tabindex="0"
+            aria-label="Seleccionar Toyota Corolla GR Sport"
+          >
+            <span class="model-btn__icon" aria-hidden="true">🏎️</span>
+            <span class="model-btn__text">
+              <span class="model-btn__name">Corolla GR</span>
+              <span class="model-btn__sub">Sport Performance · 2024</span>
+            </span>
+            <span class="model-btn__check" aria-hidden="true">✓</span>
+          </label>
+
+          <label
+            class="model-btn"
+            for="rb-hilux"
+            id="btn-hilux"
+            tabindex="0"
+            aria-label="Seleccionar Toyota Hilux 4×4"
+          >
+            <span class="model-btn__icon" aria-hidden="true">🛻</span>
+            <span class="model-btn__text">
+              <span class="model-btn__name">Hilux 4×4</span>
+              <span class="model-btn__sub">SR5 Off-Road · 2024</span>
+            </span>
+            <span class="model-btn__check" aria-hidden="true">✓</span>
+          </label>
+
+        </div>
+      </section>
+
+      <!-- Información del vehículo activo -->
+      <section aria-label="Especificaciones del vehículo">
+        <div class="vehicle-info">
+          <h1 class="vehicle-info__name" aria-live="polite">
+            Toyota <!-- El apellido lo agrega ::after via Radio Hack -->
+          </h1>
+          <span class="vehicle-info__badge" aria-label="Vehículo nuevo 2024">
+            ★ Nuevo 2024
+          </span>
+
+          <!-- Especificaciones (estáticas — el Radio Hack no cubre textos dinámicos sin JS) -->
+          <dl class="vehicle-info__specs">
+            <div class="spec-item">
+              <dt class="spec-item__label">Motor</dt>
+              <dd class="spec-item__value">2.4L</dd>
+            </div>
+            <div class="spec-item">
+              <dt class="spec-item__label">Potencia</dt>
+              <dd class="spec-item__value">272 HP</dd>
+            </div>
+            <div class="spec-item">
+              <dt class="spec-item__label">Caja</dt>
+              <dd class="spec-item__value">6 vel</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ── NUEVA SECCIÓN: Descuentos Aplicables ── -->
+      <article class="discount-card" aria-labelledby="sidebar-descuentos-title">
+        <h2 class="visually-hidden" id="sidebar-descuentos-title">Descuentos y Beneficios</h2>
+        <div class="discount-card__content">
+          <div class="discount-card__icon" aria-hidden="true">🏷️</div>
+          <div class="discount-card__text">
+            <p class="discount-card__title">Bono Especial de Feria</p>
+            <p class="discount-card__amount">Hasta $2,500 aplicables</p>
+            <p class="discount-card__terms">Tasa 0% hasta 36 meses con bancos seleccionados.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Controles de ángulo en el sidebar (versión label) -->
+      <section aria-labelledby="sidebar-angulo-title">
+        <p
+          class="sidebar__section-title"
+          id="sidebar-angulo-title"
+        >
+          Ángulo de vista
+        </p>
+
+        <div class="angle-controls" role="group" aria-label="Selección de ángulo">
+          <label
+            class="angle-tab"
+            for="rb-front"
+            tabindex="0"
+            aria-label="Vista frontal"
+          >
+            <span class="angle-tab__icon" aria-hidden="true">⬛</span>
+            Frontal
+          </label>
+          <label
+            class="angle-tab"
+            for="rb-side"
+            tabindex="0"
+            aria-label="Vista lateral"
+          >
+            <span class="angle-tab__icon" aria-hidden="true">⬛</span>
+            Lateral
+          </label>
+          <label
+            class="angle-tab"
+            for="rb-rear"
+            tabindex="0"
+            aria-label="Vista trasera"
+          >
+            <span class="angle-tab__icon" aria-hidden="true">⬛</span>
+            Trasera
+          </label>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- ════════════════════════════════════════════════════
+         PALETA — grid-column: 1 / -1 (ver layout.css)
+    ════════════════════════════════════════════════════ -->
+    <section
+      class="showroom__palette"
+      aria-labelledby="palette-title"
+    >
+      <div class="palette__header">
+        <p class="palette__title" id="palette-title">
+          Color de carrocería
+        </p>
+        <p class="palette__active-label" aria-live="polite">
+          Seleccioná tu color
+        </p>
+      </div>
+
+      <!--
+        flex-wrap: wrap garantiza el wrap intrínseco.
+        role="radiogroup" semántica correcta para el grupo.
+        Las muestras (.swatch) son <label> con for=ID del radio.
+        El :focus-visible en .swatch activa el outline dorado.
+      -->
+      <div
+        class="palette__swatches"
+        role="group"
+        aria-label="Selector de color de carrocería"
+      >
+
+        <!--
+          Cada .swatch es un <label> que controla su input[radio].
+          style="--swatch-color: X" inyecta el color al pseudo-elemento.
+          tabindex="0" lo hace focusable para :focus-visible.
+        -->
+        <label
+          class="swatch"
+          for="rb-rojo"
+          id="swatch-rojo"
+          tabindex="0"
+          aria-label="Color Rojo Fury"
+          style="--swatch-color: var(--paint-rojo)"
+        >
+          <span class="swatch__circle" style="background: var(--paint-rojo)"></span>
+          <span class="swatch__name">Rojo Fury</span>
+        </label>
+
+        <label
+          class="swatch"
+          for="rb-negro"
+          id="swatch-negro"
+          tabindex="0"
+          aria-label="Color Negro Midnight"
+          style="--swatch-color: var(--paint-negro)"
+        >
+          <span class="swatch__circle" style="background: var(--paint-negro)"></span>
+          <span class="swatch__name">Negro</span>
+        </label>
+
+        <label
+          class="swatch swatch--blanco"
+          for="rb-blanco"
+          id="swatch-blanco"
+          tabindex="0"
+          aria-label="Color Blanco Perlado"
+          style="--swatch-color: var(--paint-blanco)"
+        >
+          <span class="swatch__circle" style="background: var(--paint-blanco)"></span>
+          <span class="swatch__name">Blanco</span>
+        </label>
+
+        <label
+          class="swatch"
+          for="rb-plata"
+          id="swatch-plata"
+          tabindex="0"
+          aria-label="Color Plata Metálico"
+          style="--swatch-color: var(--paint-plata)"
+        >
+          <span class="swatch__circle" style="background: var(--paint-plata)"></span>
+          <span class="swatch__name">Plata</span>
+        </label>
+
+        <label
+          class="swatch"
+          for="rb-azul"
+          id="swatch-azul"
+          tabindex="0"
+          aria-label="Color Azul Zafiro"
+          style="--swatch-color: var(--paint-azul)"
+        >
+          <span class="swatch__circle" style="background: var(--paint-azul)"></span>
+          <span class="swatch__name">Azul</span>
+        </label>
+
+        <label
+          class="swatch"
+          for="rb-gris"
+          id="swatch-gris"
+          tabindex="0"
+          aria-label="Color Gris Cemento"
+          style="--swatch-color: var(--paint-gris)"
+        >
+          <span class="swatch__circle" style="background: var(--paint-gris)"></span>
+          <span class="swatch__name">Gris</span>
+        </label>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════
+         FOOTER
+    ════════════════════════════════════════════════════ -->
+    <footer class="showroom__footer" role="contentinfo">
+      <p>
+        ISW-521 · Laboratorio Evaluado #3 · CSS Avanzado
+        &nbsp;|&nbsp;
+        <abbr title="Cero JavaScript">0 JS</abbr>
+        &nbsp;·&nbsp;
+        Radio Button Hack · Grid Overlay · Custom Properties dinámicas
+      </p>
+    </footer>
+
+  </div><!-- /.showroom -->
+
+</body>
+</html>

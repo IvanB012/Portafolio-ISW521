@@ -1,0 +1,560 @@
+/* ============================================================
+   interactions.css
+   Toda la interactividad del Showroom — CERO JavaScript
+
+   Técnicas empleadas:
+   1. RADIO BUTTON HACK — selector hermano general (~)
+      Los <input type="radio"> están al INICIO del <body>
+      para que ~ alcance a todos los descendientes siguientes.
+
+   2. GRID OVERLAY — imágenes apiladas en grid-area: 1/1
+      Las 6 imágenes (3 ángulos × 2 modelos) ocupan la misma
+      celda; opacity las alterna via el Radio Hack.
+
+   3. CSS CUSTOM PROPERTY dinámica — --car-color
+      Al seleccionar un color, el selector ~ actualiza
+      la variable en el scope del elemento raíz.
+
+   4. @keyframes floatIn — entrada escalonada
+      animation-delay incremental por cada elemento hijo.
+   ============================================================ */
+
+/* ──────────────────────────────────────────────────────────
+   SECCIÓN 1 — ANIMACIONES GLOBALES
+   @keyframes declarados globalmente para reutilización
+─────────────────────────────────────────────────────────── */
+
+/**
+ * floatIn: Entrada flotante desde abajo con fade
+ * Usada en imágenes del stage y muestras de paleta.
+ */
+@keyframes floatIn {
+  from {
+    opacity:   0;
+    transform: translateY(32px) scale(0.96);
+  }
+  to {
+    opacity:   1;
+    transform: translateY(0)    scale(1);
+  }
+}
+
+/**
+ * glowPulse: Pulso de brillo en el glow del stage
+ */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.06; transform: scale(1);    }
+  50%       { opacity: 0.12; transform: scale(1.05); }
+}
+
+/**
+ * slideInRight: Entrada lateral para el sidebar
+ */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+/**
+ * checkPop: Escala de verificación al activar muestra
+ */
+@keyframes checkPop {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60%  { transform: scale(1.3) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   SECCIÓN 2 — GRID OVERLAY (Stage de imágenes)
+   Todas las imágenes del vehículo en la misma celda grid
+─────────────────────────────────────────────────────────── */
+
+/**
+ * .car-viewer: contenedor grid donde todas las imágenes
+ * se apilan en la misma celda (grid-area: 1/1).
+ * opacity: 0 las oculta; el Radio Hack revela la correcta.
+ */
+/**
+ * .car-viewer: Grid overlay completo.
+ * Ocupa el 100% del stage sin max-width para llenar la columna.
+ * aspect-ratio 16/9 garantiza las proporciones sin @media.
+ */
+.car-viewer {
+  display:       grid;
+  width:         100%;            /* ← Llena la columna del stage   */
+  max-width:     100%;            /* ← Sin tope de ancho            */
+  aspect-ratio:  16 / 9;
+  border-radius: var(--radius-lg);
+  overflow:      hidden;
+  position:      relative;
+  align-self:    center;
+  box-shadow:
+    var(--shadow-card),
+    0 0 0 1px var(--clr-border);
+}
+
+/* Fondo del viewer — gradiente radial de profundidad */
+.car-viewer::before {
+  content:       '';
+  grid-area:     1 / 1;
+  background:    radial-gradient(
+    ellipse 90% 60% at 50% 85%,
+    color-mix(in srgb, var(--car-color) 20%, transparent) 0%,
+    var(--clr-bg-deep) 100%
+  );
+  transition:    background var(--transition-slow);
+  z-index:       0;
+}
+
+/* Suelo reflectante */
+.car-viewer::after {
+  content:    '';
+  grid-area:  1 / 1;
+  align-self: end;
+  height:     28%;
+  background: linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--car-color) 10%, transparent) 0%,
+    transparent 100%
+  );
+  z-index:    4;
+  pointer-events: none;
+  transition: background var(--transition-slow);
+}
+
+/**
+ * Todas las imágenes apiladas en la MISMA celda (grid-area: 1/1).
+ * object-fit: cover + sin padding para que llenen el frame completo.
+ * opacity: 0 por defecto — el Radio Hack activa la correcta.
+ */
+.car-viewer__img {
+  grid-area:       1 / 1;         /* ← Grid Overlay clave           */
+  width:           100%;
+  height:          100%;
+  object-fit:      contain;       /* Muestra el auto completo       */
+  object-position: center center;
+  opacity:         0;
+  transition:      opacity var(--transition-slow),
+                   filter  var(--transition-slow);
+  z-index:         1;
+  padding:         var(--space-4) var(--space-6); /* Margen interno suave */
+}
+
+/**
+ * .car-color-overlay — Capa de colorización real fotorrealista.
+ * Al usar mix-blend-mode: hue, toma el tono del --car-color pero respeta la
+ * saturación de la imagen base. Como las llantas y vidrios son grises/negros
+ * (saturación 0), el cambio de tono no los afecta. Solo la carrocería roja
+ * (alta saturación) cambiará al nuevo color.
+ */
+.car-color-overlay {
+  grid-area:    1 / 1;
+  background:   var(--car-color);
+  mix-blend-mode: hue;            /* ← Clave del fotorrealismo en colores vivos */
+  opacity:      1;
+  z-index:      3;
+  pointer-events: none;
+  transition:
+    background var(--transition-slow),
+    opacity    var(--transition-slow);
+  border-radius: inherit;
+}
+
+/* ──────────────────────────────────────────────────────────
+   SECCIÓN 3 — RADIO BUTTON HACK COMPLETO
+   Estructura de selectores:
+   #rb-MODELO:checked ~ .showroom #ELEMENTO { ... }
+
+   Los inputs tienen IDs únicos:
+   Modelos:  #rb-corolla, #rb-hilux
+   Ángulos:  #rb-front, #rb-side, #rb-rear
+   Colores:  #rb-rojo, #rb-negro, #rb-blanco, #rb-plata,
+             #rb-azul, #rb-gris
+─────────────────────────────────────────────────────────── */
+
+/* ── 3a. Control de MODELO — qué auto se muestra ────────── */
+
+/* Por defecto: solo el Corolla GR es visible (checked default en HTML) */
+/* Las imágenes del Hilux están ocultas hasta que su radio se activa    */
+
+/* Corolla GR visible por defecto para todos los ángulos */
+#rb-corolla:checked ~ .showroom .car-viewer__img[data-model="corolla-gr"] {
+  /* La visibilidad final la da el combo modelo+ángulo (ver 3b) */
+}
+
+/* Hilux visible cuando su radio está activo */
+#rb-hilux:checked ~ .showroom .car-viewer__img[data-model="corolla-gr"] {
+  display: none;   /* Ocultamos las del Corolla */
+}
+
+/* ── 3b. Control de ÁNGULO + MODELO combinado ─────────────
+   El selector hermano ~ concatena: modelo × ángulo = imagen exacta
+─────────────────────────────────────────────────────────── */
+
+/* === Corolla GR === */
+#rb-corolla:checked ~ #rb-front:checked ~ .showroom
+  .car-viewer__img[data-model="corolla-gr"][data-angle="front"] {
+  opacity: 1;
+  animation: floatIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+#rb-corolla:checked ~ #rb-side:checked ~ .showroom
+  .car-viewer__img[data-model="corolla-gr"][data-angle="side"] {
+  opacity: 1;
+  animation: floatIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+#rb-corolla:checked ~ #rb-rear:checked ~ .showroom
+  .car-viewer__img[data-model="corolla-gr"][data-angle="rear"] {
+  opacity: 1;
+  animation: floatIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* === Hilux 4x4 === */
+#rb-hilux:checked ~ #rb-front:checked ~ .showroom
+  .car-viewer__img[data-model="hilux-4x4"][data-angle="front"] {
+  opacity: 1;
+  animation: floatIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+#rb-hilux:checked ~ #rb-side:checked ~ .showroom
+  .car-viewer__img[data-model="hilux-4x4"][data-angle="side"] {
+  opacity: 1;
+  animation: floatIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+#rb-hilux:checked ~ #rb-rear:checked ~ .showroom
+  .car-viewer__img[data-model="hilux-4x4"][data-angle="rear"] {
+  opacity: 1;
+  animation: floatIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── 3c. Control de COLOR — actualiza --car-color ─────────
+   Cada selector actualiza la custom property en el scope
+   de :root para que todos los gradientes y tintes cambien.
+─────────────────────────────────────────────────────────── */
+#rb-rojo:checked   ~ .showroom { --car-color: var(--paint-rojo);   }
+#rb-negro:checked  ~ .showroom { --car-color: var(--paint-negro);  }
+#rb-blanco:checked ~ .showroom { --car-color: var(--paint-blanco); }
+#rb-plata:checked  ~ .showroom { --car-color: var(--paint-plata);  }
+#rb-azul:checked   ~ .showroom { --car-color: var(--paint-azul);   }
+#rb-gris:checked   ~ .showroom { --car-color: var(--paint-gris);   }
+
+/*
+ * COLORIZACIÓN REAL Y PROFESIONAL DE LA CARROCERÍA
+ * 1. Colores vivos (Rojo, Azul): Usamos el overlay con mix-blend-mode: hue.
+ * 2. Colores neutros (Negro, Blanco, Plata, Gris): Apagamos el overlay y
+ *    desaturamos la imagen base usando filtros CSS para mantener reflejos.
+ */
+
+/* === ROJO (Color base) === */
+#rb-rojo:checked   ~ .showroom .car-color-overlay { opacity: 1; mix-blend-mode: hue; }
+#rb-rojo:checked   ~ .showroom .car-viewer__img { filter: drop-shadow(0 4px 24px rgba(200,16,46,0.6)); }
+
+/* === AZUL (Color Vivo) === */
+#rb-azul:checked   ~ .showroom .car-color-overlay { opacity: 1; mix-blend-mode: hue; }
+#rb-azul:checked   ~ .showroom .car-viewer__img { filter: drop-shadow(0 4px 24px rgba(26,90,180,0.7)); }
+
+/* === NEGRO (Desaturar + Oscurecer fuerte + Contraste para reflejos) === */
+#rb-negro:checked  ~ .showroom .car-color-overlay { opacity: 0; }
+#rb-negro:checked  ~ .showroom .car-viewer__img {
+  filter: grayscale(1) brightness(0.4) contrast(1.4) drop-shadow(0 4px 24px rgba(0,0,0,0.9));
+}
+
+/* === BLANCO (Desaturar + Aumentar Brillo exponencial + Bajar contraste) === */
+#rb-blanco:checked ~ .showroom .car-color-overlay { opacity: 0; }
+#rb-blanco:checked ~ .showroom .car-viewer__img {
+  filter: grayscale(1) brightness(2.2) contrast(0.8) drop-shadow(0 4px 24px rgba(240,240,235,0.5));
+}
+
+/* === PLATA (Desaturar + Brillo suave) === */
+#rb-plata:checked  ~ .showroom .car-color-overlay { opacity: 0; }
+#rb-plata:checked  ~ .showroom .car-viewer__img {
+  filter: grayscale(1) brightness(1.2) contrast(0.9) drop-shadow(0 4px 24px rgba(157,170,184,0.6));
+}
+
+/* === GRIS (Desaturar + Oscurecer ligero) === */
+#rb-gris:checked   ~ .showroom .car-color-overlay { opacity: 0; }
+#rb-gris:checked   ~ .showroom .car-viewer__img {
+  filter: grayscale(1) brightness(0.7) contrast(1.1) drop-shadow(0 4px 24px rgba(74,85,104,0.6));
+}
+
+/* ── 3d. Indicadores visuales de modelo activo ────────────── */
+
+/* Labels de modelo (botones grandes en el sidebar) */
+.model-btn {
+  display:          flex;
+  align-items:      center;
+  gap:              var(--space-3);
+  padding:          var(--space-3) var(--space-4);
+  background:       var(--clr-bg-elevated);
+  border:           2px solid var(--clr-border);
+  border-radius:    var(--radius-md);
+  cursor:           pointer;
+  transition:
+    border-color  var(--transition-base),
+    background    var(--transition-base),
+    box-shadow    var(--transition-base),
+    transform     var(--transition-fast);
+  /* accesibilidad: foco visible */
+  outline:          2px solid transparent;
+  outline-offset:   3px;
+}
+
+.model-btn:hover {
+  border-color: var(--clr-accent-dim);
+  background:   color-mix(in srgb, var(--clr-accent) 5%, var(--clr-bg-elevated));
+  transform:    translateY(-1px);
+}
+
+/* :focus-visible en label del modelo */
+.model-btn:focus-visible {
+  outline-color: var(--clr-gold);
+  outline-width: 3px;
+}
+
+/* Ícono del modelo */
+.model-btn__icon {
+  font-size:    1.75rem;
+  line-height:  1;
+  filter:       grayscale(1);
+  transition:   filter var(--transition-base);
+}
+
+.model-btn__text {
+  display:       flex;
+  flex-direction: column;
+  gap:            2px;
+}
+
+.model-btn__name {
+  font-family:    var(--font-display);
+  font-size:      var(--text-lg);
+  font-weight:    700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color:          var(--clr-text-primary);
+}
+
+.model-btn__sub {
+  font-size:  var(--text-xs);
+  color:      var(--clr-text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Marca activa del modelo seleccionado */
+.model-btn__check {
+  margin-left:    auto;
+  width:          20px;
+  height:         20px;
+  border-radius:  50%;
+  border:         2px solid var(--clr-border);
+  background:     transparent;
+  transition:
+    background    var(--transition-base),
+    border-color  var(--transition-base);
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  font-size:      0.6rem;
+  color:          transparent;
+}
+
+/* Estado activo del botón de modelo */
+#rb-corolla:checked ~ .showroom .model-btn[for="rb-corolla"],
+#rb-hilux:checked   ~ .showroom .model-btn[for="rb-hilux"] {
+  border-color: var(--clr-accent);
+  background:   color-mix(in srgb, var(--clr-accent) 10%, var(--clr-bg-elevated));
+  box-shadow:   0 0 12px rgba(200, 16, 46, 0.2), var(--shadow-inner);
+}
+
+#rb-corolla:checked ~ .showroom .model-btn[for="rb-corolla"] .model-btn__icon,
+#rb-hilux:checked   ~ .showroom .model-btn[for="rb-hilux"]   .model-btn__icon {
+  filter: none;
+}
+
+#rb-corolla:checked ~ .showroom .model-btn[for="rb-corolla"] .model-btn__check,
+#rb-hilux:checked   ~ .showroom .model-btn[for="rb-hilux"]   .model-btn__check {
+  background:   var(--clr-accent);
+  border-color: var(--clr-accent);
+  color:        white;
+}
+
+/* Info del modelo activo — especificaciones dinámicas */
+#rb-corolla:checked ~ .showroom .vehicle-info__name::after {
+  content: 'GR SPORT';
+}
+#rb-hilux:checked ~ .showroom .vehicle-info__name::after {
+  content: '4×4 SR5';
+}
+
+/* ── 3e. Controles de ángulo (tabs horizontales) ────────── */
+.angle-tab {
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  gap:            var(--space-2);
+  padding:        var(--space-2) var(--space-4);
+  background:     var(--clr-bg-elevated);
+  border:         1px solid var(--clr-border);
+  border-radius:  var(--radius-md);
+  cursor:         pointer;
+  font-size:      var(--text-sm);
+  font-weight:    600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          var(--clr-text-muted);
+  transition:
+    color         var(--transition-base),
+    border-color  var(--transition-base),
+    background    var(--transition-base),
+    transform     var(--transition-fast);
+  outline:        2px solid transparent;
+  outline-offset: 3px;
+}
+
+.angle-tab:hover {
+  color:        var(--clr-text-primary);
+  border-color: var(--clr-border);
+  transform:    translateY(-1px);
+}
+
+/* :focus-visible en labels de ángulo */
+.angle-tab:focus-visible {
+  outline-color: var(--clr-gold);
+}
+
+.angle-tab__icon {
+  font-size: 1rem;
+}
+
+/* Estado activo del ángulo */
+#rb-front:checked ~ .showroom .angle-tab[for="rb-front"],
+#rb-side:checked  ~ .showroom .angle-tab[for="rb-side"],
+#rb-rear:checked  ~ .showroom .angle-tab[for="rb-rear"] {
+  color:        var(--clr-text-primary);
+  border-color: var(--clr-accent);
+  background:   color-mix(in srgb, var(--clr-accent) 12%, var(--clr-bg-elevated));
+  box-shadow:   var(--shadow-inner), 0 0 8px rgba(200, 16, 46, 0.15);
+}
+
+/* ── 3f. Muestras de paleta activas ──────────────────────── */
+#rb-rojo:checked   ~ .showroom .swatch[for="rb-rojo"],
+#rb-negro:checked  ~ .showroom .swatch[for="rb-negro"],
+#rb-blanco:checked ~ .showroom .swatch[for="rb-blanco"],
+#rb-plata:checked  ~ .showroom .swatch[for="rb-plata"],
+#rb-azul:checked   ~ .showroom .swatch[for="rb-azul"],
+#rb-gris:checked   ~ .showroom .swatch[for="rb-gris"] {
+  /* La clase .swatch--active se simula con este selector */
+}
+
+/* Círculo activo cuando el radio de color está checked */
+#rb-rojo:checked   ~ .showroom .swatch[for="rb-rojo"]   .swatch__circle,
+#rb-negro:checked  ~ .showroom .swatch[for="rb-negro"]  .swatch__circle,
+#rb-blanco:checked ~ .showroom .swatch[for="rb-blanco"] .swatch__circle,
+#rb-plata:checked  ~ .showroom .swatch[for="rb-plata"]  .swatch__circle,
+#rb-azul:checked   ~ .showroom .swatch[for="rb-azul"]   .swatch__circle,
+#rb-gris:checked   ~ .showroom .swatch[for="rb-gris"]   .swatch__circle {
+  border:     3px solid white;
+  transform:  scale(1.18);
+  box-shadow:
+    inset 0 -3px 8px rgba(0,0,0,0.4),
+    inset 0 4px 8px rgba(255,255,255,0.25),
+    0 0 24px var(--swatch-color, #888),
+    0 8px 24px rgba(0,0,0,0.6);
+}
+
+/* Checkmark animado sobre la muestra activa */
+#rb-rojo:checked   ~ .showroom .swatch[for="rb-rojo"]   .swatch__circle::after,
+#rb-negro:checked  ~ .showroom .swatch[for="rb-negro"]  .swatch__circle::after,
+#rb-blanco:checked ~ .showroom .swatch[for="rb-blanco"] .swatch__circle::after,
+#rb-plata:checked  ~ .showroom .swatch[for="rb-plata"]  .swatch__circle::after,
+#rb-azul:checked   ~ .showroom .swatch[for="rb-azul"]   .swatch__circle::after,
+#rb-gris:checked   ~ .showroom .swatch[for="rb-gris"]   .swatch__circle::after {
+  content:    '✓';
+  position:   absolute;
+  inset:      0;
+  display:    flex;
+  align-items:    center;
+  justify-content: center;
+  font-size:  1.2rem;
+  font-weight: 900;
+  color:      rgba(255,255,255,0.9);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  animation:  checkPop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Nombre de la muestra activa */
+#rb-rojo:checked   ~ .showroom .swatch[for="rb-rojo"]   .swatch__name,
+#rb-negro:checked  ~ .showroom .swatch[for="rb-negro"]  .swatch__name,
+#rb-blanco:checked ~ .showroom .swatch[for="rb-blanco"] .swatch__name,
+#rb-plata:checked  ~ .showroom .swatch[for="rb-plata"]  .swatch__name,
+#rb-azul:checked   ~ .showroom .swatch[for="rb-azul"]   .swatch__name,
+#rb-gris:checked   ~ .showroom .swatch[for="rb-gris"]   .swatch__name {
+  color:       var(--clr-text-primary);
+  font-weight: 700;
+}
+
+/* ──────────────────────────────────────────────────────────
+   SECCIÓN 4 — ANIMACIONES DE ENTRADA ESCALONADAS
+   floatIn con animation-delay progresivo en hijos
+─────────────────────────────────────────────────────────── */
+
+/* Entrada del sidebar */
+.showroom__sidebar {
+  animation: slideInRight 600ms cubic-bezier(0.4, 0, 0.2, 1) 200ms both;
+}
+
+/* Entrada escalonada de cada .swatch en la paleta */
+.swatch:nth-child(1) { animation: floatIn 500ms ease 100ms both; }
+.swatch:nth-child(2) { animation: floatIn 500ms ease 175ms both; }
+.swatch:nth-child(3) { animation: floatIn 500ms ease 250ms both; }
+.swatch:nth-child(4) { animation: floatIn 500ms ease 325ms both; }
+.swatch:nth-child(5) { animation: floatIn 500ms ease 400ms both; }
+.swatch:nth-child(6) { animation: floatIn 500ms ease 475ms both; }
+
+/* Pulsación continua del glow del stage */
+.showroom__stage::before {
+  content:    '';
+  position:   absolute;
+  inset:      20% 10%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--car-color) 20%, transparent) 0%,
+    transparent 70%
+  );
+  animation:     glowPulse 4s ease-in-out infinite;
+  pointer-events: none;
+  transition:    background var(--transition-slow);
+}
+
+/* Tabs de ángulo: entrada escalonada */
+.angle-tab:nth-of-type(1) { animation: floatIn 400ms ease 300ms both; }
+.angle-tab:nth-of-type(2) { animation: floatIn 400ms ease 380ms both; }
+.angle-tab:nth-of-type(3) { animation: floatIn 400ms ease 460ms both; }
+
+/* Botones de modelo: entrada escalonada */
+.model-btn:nth-of-type(1) { animation: floatIn 400ms ease 150ms both; }
+.model-btn:nth-of-type(2) { animation: floatIn 400ms ease 250ms both; }
+
+/* ──────────────────────────────────────────────────────────
+   SECCIÓN 5 — CONTROLES DE ÁNGULO: CONTENEDOR
+─────────────────────────────────────────────────────────── */
+.angle-controls {
+  display:     flex;
+  flex-wrap:   wrap;     /* Intrínsecamente responsivo */
+  gap:         var(--space-2);
+}
+
+/* ──────────────────────────────────────────────────────────
+   SECCIÓN 6 — COLOR GLOW en el car-viewer reactivo
+   Basado en el color seleccionado
+─────────────────────────────────────────────────────────── */
+.car-viewer {
+  /* Borde de color dinámico sutil — reactivo al --car-color */
+  box-shadow:
+    var(--shadow-card),
+    0 0 0 1px var(--clr-border),
+    0 0 48px color-mix(in srgb, var(--car-color) 30%, transparent);
+  transition: box-shadow var(--transition-slow);
+}
