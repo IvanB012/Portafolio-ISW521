@@ -1,6 +1,6 @@
 class CuentaBancaria {
     constructor(saldoInicial) {
-        this.saldo = saldoInicial;
+        this.saldo = saldoInicial; 
     }   
     get saldo() {
         return this._saldo;
