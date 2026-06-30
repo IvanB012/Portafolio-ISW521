@@ -1,0 +1,4 @@
+9999 1
+a y b apunan al mismo objeto
+el operador b crea un nuevo objeto con los balores copiados
+la tecnica es la base de inmutabilidad 
